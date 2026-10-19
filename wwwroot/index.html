@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eof-bot</title>
+  <link rel="stylesheet" href="theme.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <aside class="side">
+    <div class="brand"><span class="mark">e</span>Eof-bot</div>
+    <button id="new-chat">
+      <span class="plus"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.6" stroke-linecap="round" aria-hidden="true"><path d="M12 5v14M5 12h14"/></svg></span>
+      Cuộc trò chuyện mới
+    </button>
+    <div class="group">Gần đây</div>
+    <ul id="sessions"></ul>
+    <div class="me">
+      <span id="avatar" class="avatar"></span>
+      <div class="who">
+        <b id="user-name"></b>
+        <div class="links">
+          <a id="admin-link" class="link" href="/admin/" hidden>Quản trị</a>
+          <form id="logout" method="post" action="/auth/logout"><button class="link">Đăng xuất</button></form>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <main id="main" class="home">
+    <header class="bar">
+      <h1 id="title">Cuộc trò chuyện mới</h1>
+      <span id="quota" class="quota" hidden></span>
+    </header>
+    <div id="messages"></div>
+    <h2 id="hello" class="hello"><span class="mark">e</span><span id="greeting">Xin chào</span></h2>
+    <div class="composer-wrap">
+      <form id="ask">
+        <div id="attachments" class="attachments" hidden></div>
+        <button id="attach" class="attach" type="button" aria-label="Đính kèm ảnh" title="Đính kèm ảnh (hoặc dán Ctrl+V, kéo thả)">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-8.5 8.5a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
+        </button>
+        <textarea id="input" rows="1" placeholder="Bạn cần tìm gì trong tài liệu?" aria-label="Câu hỏi"></textarea>
+        <button id="send" type="submit" aria-label="Gửi">
+          <svg width="17" height="17" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+        </button>
+      </form>
+      <p id="attach-error" class="attach-error" hidden></p>
+      <div id="suggest" class="suggest">
+        <button type="button">Mỗi năm được bao nhiêu ngày phép?</button>
+        <button type="button">Chi phí công tác 6 triệu thì ai duyệt?</button>
+        <button type="button">Quên mật khẩu thì làm sao?</button>
+        <button type="button">Quà Tết theo thâm niên thế nào?</button>
+      </div>
+      <p class="hint">Eof-bot chỉ trả lời theo tài liệu nội bộ, kèm số mục để bạn đối chiếu · Enter gửi, Shift+Enter xuống dòng, dán ảnh bằng Ctrl+V</p>
+    </div>
+  </main>
+
+  <aside id="source" class="source" hidden>
+    <div class="src-head">
+      <b>Nguồn</b>
+      <div id="src-tabs" class="src-tabs"></div>
+      <button id="src-close" class="icon-btn" aria-label="Đóng">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M18 6 6 18M6 6l12 12"/></svg>
+      </button>
+    </div>
+    <div id="src-crumb" class="src-crumb"></div>
+    <article id="src-body" class="src-body"></article>
+  </aside>
+
+  <script src="lib/marked.umd.js"></script>
+  <script src="lib/purify.min.js"></script>
+  <script src="sse.js"></script>
+  <script src="cite.js"></script>
+  <script src="image.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

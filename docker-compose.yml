@@ -1,0 +1,23 @@
+# docker compose up -d --build
+# .env is created by hand on the server (never committed); see .env.example.
+# data/ (documents + SQLite) is mounted from the host: changing documents only needs a restart, not a rebuild.
+
+services:
+  eof-bot:
+    build: .
+    image: eof-bot:local
+    container_name: eof-bot
+    restart: unless-stopped
+    env_file: .env
+    environment:
+      - TZ=${TZ:-Asia/Ho_Chi_Minh}
+    # Run as the host user's uid so SQLite can write to the mounted folder
+    user: "1000:1000"
+    volumes:
+      - ./data:/app/data
+    # Listens on all interfaces. Bind to a specific IP (e.g. "127.0.0.1:5086:8080") to restrict access,
+    # especially when sign-in is disabled (Auth__Enabled=false).
+    ports:
+      - "5086:8080"
+    mem_limit: 512m
+    cpus: 1.0

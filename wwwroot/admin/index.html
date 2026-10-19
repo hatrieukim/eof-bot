@@ -1,0 +1,311 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Eof-bot · Quản trị</title>
+  <link rel="stylesheet" href="../theme.css">
+  <link rel="stylesheet" href="admin.css">
+</head>
+<body>
+  <aside class="side">
+    <div class="brand"><span class="mark">e</span>Eof-bot <small>quản trị</small></div>
+    <nav>
+      <div class="grp">Nội dung</div>
+      <button class="tab active" data-tab="docs">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><path d="M14 2v6h6"/></svg>Tài liệu</button>
+      <button class="tab" data-tab="prompts">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 6h16M4 12h10M4 18h7"/></svg>Prompt</button>
+      <div class="grp">Chất lượng</div>
+      <button class="tab" data-tab="bench">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 11l3 3 8-8"/><path d="M20 12v7a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h9"/></svg>Bộ benchmark</button>
+      <button class="tab" data-tab="tests">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Chạy test</button>
+      <button class="tab" data-tab="eval">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 3v18h18"/><path d="m7 15 4-4 3 3 5-6"/></svg>Eval chat thật</button>
+      <div class="grp">Vận hành</div>
+      <button class="tab" data-tab="usage">
+        <svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>Token &amp; hạn mức</button>
+    </nav>
+    <a class="back" href="/">← Về trang chat</a>
+  </aside>
+
+  <!-- ---- Documents ---- -->
+  <section id="tab-docs" class="panel">
+    <header class="head">
+      <div class="t"><h1>Tài liệu</h1><p id="doc-summary"></p></div>
+      <button id="doc-new">+ Tạo mới</button>
+      <button id="doc-upload">Tải lên</button>
+      <input id="doc-file" type="file" accept=".md" multiple hidden>
+    </header>
+    <div class="split">
+      <div class="card list">
+        <table>
+          <thead><tr><th>File</th><th class="num">KB</th><th class="num">Mục</th><th>Sửa lúc</th></tr></thead>
+          <tbody id="doc-rows"></tbody>
+        </table>
+      </div>
+      <div class="card editor">
+        <p id="doc-empty" class="empty">Chọn một file để sửa.</p>
+        <div id="doc-edit" class="fill" hidden>
+          <div class="toolbar">
+            <strong id="doc-name" class="file"></strong>
+            <span id="doc-state" class="dirty"></span>
+            <span class="spacer"></span>
+            <a id="doc-download" class="button">Tải về</a>
+            <button id="doc-delete" class="danger">Xóa</button>
+            <button id="doc-save" class="primary">Lưu</button>
+          </div>
+          <div class="panes">
+            <textarea id="doc-text" class="code" spellcheck="false" aria-label="Nội dung markdown"></textarea>
+            <div id="doc-preview" class="preview prose"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- Prompt ---- -->
+  <section id="tab-prompts" class="panel" hidden>
+    <header class="head">
+      <div class="t"><h1>Prompt</h1><p>Khối &lt;documents&gt; (toàn bộ tài liệu) được app tự nối vào sau prompt.</p></div>
+    </header>
+    <div class="split">
+      <div class="card list narrow">
+        <div id="prompt-rows" class="versions"></div>
+      </div>
+      <div class="card editor">
+        <p id="prompt-empty" class="empty">Chọn một bản để xem.</p>
+        <div id="prompt-view" class="fill" hidden>
+          <div id="prompt-view-bar" class="toolbar">
+            <strong id="prompt-title"></strong>
+            <span id="prompt-badge" class="badge">đang dùng</span>
+            <span class="spacer"></span>
+            <button id="prompt-edit">Sửa</button>
+            <button id="prompt-fork">Tạo bản mới từ bản này</button>
+            <button id="prompt-activate" class="primary">Kích hoạt</button>
+          </div>
+          <div id="prompt-new-bar" class="toolbar" hidden>
+            <strong id="prompt-new-title"></strong>
+            <input id="prompt-note" placeholder="Ghi chú (ví dụ: thêm luật cho câu hỏi mơ hồ)" aria-label="Ghi chú">
+            <button id="prompt-cancel">Hủy</button>
+            <button id="prompt-save" class="primary">Lưu bản mới</button>
+          </div>
+          <div class="panes">
+            <textarea id="prompt-text" class="code" spellcheck="false" readonly aria-label="Nội dung prompt"></textarea>
+            <div class="chat fill">
+              <div class="toolbar">
+                <strong id="chat-title">Chat thử</strong>
+                <span class="spacer"></span>
+                <button id="chat-new" class="small">Cuộc mới</button>
+              </div>
+              <div id="chat-messages" class="chat-messages"></div>
+              <form id="chat-form" class="chat-form">
+                <div id="chat-attachments" class="attachments" hidden></div>
+                <button id="chat-attach" class="attach" type="button" aria-label="Đính kèm ảnh" title="Đính kèm ảnh (hoặc dán Ctrl+V, kéo thả)">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m21.4 11.1-8.5 8.5a5.5 5.5 0 0 1-7.8-7.8l8.5-8.5a3.7 3.7 0 0 1 5.2 5.2l-8.5 8.5a1.8 1.8 0 0 1-2.6-2.6l7.8-7.8"/></svg>
+                </button>
+                <textarea id="chat-input" rows="2" placeholder="Hỏi thử (Enter gửi, Shift+Enter xuống dòng)" aria-label="Câu hỏi thử"></textarea>
+                <button id="chat-send" class="send" type="submit" aria-label="Gửi">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg>
+                </button>
+              </form>
+              <p id="chat-attach-error" class="attach-error" hidden></p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- Benchmark set ---- -->
+  <section id="tab-bench" class="panel" hidden>
+    <header class="head">
+      <div class="t"><h1>Bộ benchmark</h1><p id="bench-summary"></p></div>
+      <button id="bench-new" class="primary">+ Thêm câu</button>
+    </header>
+    <div class="split">
+      <div class="card list wide">
+        <div class="toolbar pad">
+          <input id="bench-search" type="search" placeholder="Tìm mã, câu hỏi, đáp án, nguồn" aria-label="Tìm câu hỏi">
+          <select id="bench-kind" aria-label="Loại"><option value="">Mọi loại</option></select>
+          <select id="bench-tier" aria-label="Bộ">
+            <option value="">Cả bộ</option>
+            <option value="nhanh">⚡ Nhanh</option>
+            <option value="trung">★ Trung</option>
+          </select>
+        </div>
+        <table>
+          <thead><tr><th>Mã</th><th>Bộ</th><th>Loại</th><th>Câu hỏi</th></tr></thead>
+          <tbody id="bench-rows"></tbody>
+        </table>
+      </div>
+      <div class="card editor">
+        <p id="bench-empty" class="empty">Chọn một câu để sửa, hoặc bấm “+ Thêm câu”.</p>
+        <form id="bench-form" class="form" hidden>
+          <div class="toolbar">
+            <strong id="bench-title" class="file"></strong>
+            <span id="bench-state" class="dirty"></span>
+            <span class="spacer"></span>
+            <button id="bench-delete" class="danger" type="button">Xóa</button>
+            <button id="bench-save" class="primary" type="submit">Lưu</button>
+          </div>
+          <div class="row">
+            <label>Mã <input id="bench-id" required placeholder="LV-21"></label>
+            <label>Loại <input id="bench-kind-input" list="bench-kinds" required></label>
+            <datalist id="bench-kinds"></datalist>
+            <label class="check"><input id="bench-nhanh" type="checkbox"> ⚡ Nhanh</label>
+            <label class="check"><input id="bench-trung" type="checkbox"> ★ Trung</label>
+          </div>
+          <label>Câu hỏi <textarea id="bench-question" rows="3" required></textarea></label>
+          <label>Đáp án đúng <textarea id="bench-expected" rows="8" required></textarea></label>
+          <label>Nguồn <input id="bench-sources" placeholder="nghi-phep.md § 1.2; phuc-loi.md § 2–3"></label>
+          <p class="note">Câu loại “Không có” để nguồn là —. Câu loại “Nối tiếp” dùng mã có chữ cuối (NT-01a, NT-01b…), các câu cùng mã gốc chạy chung một cuộc chat theo thứ tự.
+            Tick Nhanh thì câu cũng thuộc bộ Trung. Đang chạy test thì không sửa được.</p>
+        </form>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- Test runs ---- -->
+  <section id="tab-tests" class="panel" hidden>
+    <header class="head">
+      <div class="t"><h1>Chạy test</h1><p id="test-sub">Chọn bản prompt và bộ câu hỏi rồi bấm chạy.</p></div>
+      <select id="test-prompt" aria-label="Bản prompt"></select>
+      <div id="test-tiers" class="seg"></div>
+      <button id="test-start" class="primary">
+        <svg width="12" height="12" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M7 4v16l13-8z"/></svg>Chạy
+      </button>
+    </header>
+    <div class="runbar">
+      <label for="run-select">Lượt</label>
+      <select id="run-select"></select>
+      <span id="test-running" class="spin" hidden></span>
+      <span id="test-status"></span>
+      <span class="spacer"></span>
+      <button id="test-cancel" class="danger small" hidden>Hủy lượt</button>
+    </div>
+    <div>
+        <p id="test-empty" class="empty card">Chưa có lượt test nào. Chọn bản prompt và bộ câu hỏi rồi bấm chạy.</p>
+        <div id="test-view" class="stack" hidden>
+          <div id="test-kpis" class="kpis"></div>
+          <div class="work">
+            <div class="card mx">
+              <div class="ch">
+                <h2 id="matrix-title">Ma trận 8 tiêu chí</h2>
+                <div id="test-filters" class="chips"></div>
+              </div>
+              <div class="scroll">
+                <table class="matrix">
+                  <thead id="matrix-head"></thead>
+                  <tbody id="result-rows"></tbody>
+                </table>
+              </div>
+              <div id="matrix-legend" class="legend">
+                <span><i class="cell p">✓</i>Đạt</span><span><i class="cell f">✗</i>Rớt</span><span><i class="cell n">–</i>Không áp dụng</span>
+              </div>
+            </div>
+            <div id="test-detail" class="card detail">
+              <p class="empty">Bấm một câu trong bảng để xem chi tiết.</p>
+            </div>
+          </div>
+        </div>
+    </div>
+  </section>
+
+  <!-- ---- Real chat eval ---- -->
+  <section id="tab-eval" class="panel" hidden>
+    <header class="head">
+      <div class="t"><h1>Eval chat thật</h1><p id="eval-summary"></p></div>
+      <div id="eval-days" class="seg">
+        <button data-days="7">7 ngày</button><button data-days="30" class="on">30 ngày</button><button data-days="90">90 ngày</button>
+      </div>
+    </header>
+    <div class="split top">
+      <div class="stack grow">
+        <div class="card pad">
+          <h2>Điểm trung bình theo ngày</h2>
+          <div id="eval-chart" class="chart"></div>
+        </div>
+        <div class="card">
+          <div class="ch"><h2>Session bị rớt</h2></div>
+          <div class="scroll">
+            <table>
+              <thead><tr><th>Lúc</th><th>Người</th><th>Câu hỏi đầu</th><th class="num">Điểm</th><th>Rớt</th></tr></thead>
+              <tbody id="eval-rows"></tbody>
+            </table>
+          </div>
+          <p class="note pad">Mỗi ngày app tự bốc tối đa 5 session chat thật để chấm theo 8 tiêu chí. Điểm = số tiêu chí đạt / số tiêu chí áp dụng.</p>
+        </div>
+      </div>
+      <div class="card detail eval-detail">
+        <p id="eval-empty" class="empty">Chọn một session bị rớt để xem.</p>
+        <div id="eval-view" hidden>
+          <div class="dh">
+            <div class="row"><b id="eval-score" class="big"></b><span id="eval-title"></span></div>
+            <p id="eval-meta" class="note"></p>
+          </div>
+          <div class="db">
+            <div id="eval-scores" class="crits"></div>
+            <h4>Hội thoại</h4>
+            <div id="eval-turns" class="turns"></div>
+            <details>
+              <summary>Nhận xét đầy đủ của judge</summary>
+              <div id="eval-rationale" class="prose small"></div>
+            </details>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ---- Token ---- -->
+  <section id="tab-usage" class="panel" hidden>
+    <header class="head">
+      <div class="t"><h1>Token &amp; hạn mức</h1><p id="quota-model"></p></div>
+      <div id="usage-days" class="seg">
+        <button data-days="7">7 ngày</button><button data-days="30" class="on">30 ngày</button><button data-days="90">90 ngày</button>
+      </div>
+    </header>
+    <div class="cards3">
+      <div class="card pad box">
+        <div class="ch0"><h2>Hạn mức tài khoản AI</h2><button id="quota-refresh" class="small">Làm mới</button></div>
+        <p id="quota-error" class="note warn" hidden></p>
+        <div id="quota-groups" class="qgroups"></div>
+        <div id="quota-accounts" class="accs"></div>
+        <p class="foot"><span id="quota-time"></span> · dùng chung với mọi app qua CLIProxyAPI, nhiều tài khoản cùng gói thì cộng dồn</p>
+      </div>
+      <div id="usage-today" class="card pad box"></div>
+      <div id="usage-month" class="card pad box"></div>
+    </div>
+    <div class="card pad">
+      <div class="ch0"><h2>Theo ngày</h2><span id="usage-legend" class="legend"></span></div>
+      <div id="usage-chart" class="chart"></div>
+    </div>
+    <div class="card">
+      <div class="ch">
+        <h2>Người dùng</h2>
+        <form id="quota-form" class="default">
+          <label for="quota-default">Mặc định</label>
+          <input id="quota-default" type="number" min="0" step="1" required>
+          <span>câu/người/ngày</span>
+          <button class="small">Lưu</button>
+        </form>
+      </div>
+      <div class="scroll">
+        <table>
+          <thead><tr><th>Người</th><th>Hôm nay</th><th class="num">Token hôm nay</th><th id="usage-users-n" class="num"></th><th id="usage-users-t" class="num"></th><th>Hạn mức</th><th>Hỏi lần cuối</th><th></th></tr></thead>
+          <tbody id="usage-users"></tbody>
+        </table>
+      </div>
+      <p class="note pad">Đếm lại lúc 0 giờ (giờ Việt Nam). Câu lỗi hoặc bị ngắt giữa chừng không tính. Admin không bị giới hạn. Token = input + output; benchmark chưa tính token của judge. <code>/ask</code> và DevUI không được ghi.</p>
+    </div>
+  </section>
+
+  <script src="../lib/marked.umd.js"></script>
+  <script src="../lib/purify.min.js"></script>
+  <script src="../sse.js"></script>
+  <script src="../image.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

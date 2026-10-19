@@ -1,0 +1,30 @@
+# Secrets and local environment
+.env
+.env.*
+!.env.example
+
+# Build output
+bin/
+obj/
+TestResults/
+*.user
+
+# IDE / OS
+.idea/
+.vs/
+.vscode/
+.DS_Store
+
+# Real documents, benchmark data and SQLite databases: never commit
+data/
+*.db
+*.db-shm
+*.db-wal
+
+# Claude Code local settings (dev machine only)
+.claude/settings.local.json
+.claude/launch.json
+CLAUDE.local.md
+
+# Private, host-specific deploy scripts; the generic one is deploy.sh
+deploy-*.sh

@@ -1,0 +1,166 @@
+@import url(fonts/fonts.css);
+
+/* "Warm & calm" theme: warm paper background, warm greys, one sparingly used brick-red accent,
+   serif for the "voice" (greeting, headings, answers), sans for buttons/labels/tables */
+:root {
+  --paper: #F7F5EF;
+  --paper-2: #F1EEE6;
+  --surface: #FFFFFF;
+  --surface-2: #FCFBF8;
+  --sand: #ECE6DA;
+
+  --ink: #22201C;
+  --ink-2: #3A362F;
+  --ink-3: #4B4740;
+  --mute: #6E6A61;
+  --faint: #8A857B;
+
+  --line: rgba(34, 32, 28, .10);
+  --line-2: rgba(34, 32, 28, .16);
+  --hover: rgba(110, 106, 97, .10);
+  --selected: rgba(110, 106, 97, .16);
+
+  --accent: #B5532F;
+  --accent-ink: #8E3E21;
+  --accent-soft: #F2E4DA;
+  --accent-wash: #FBF4EE;
+  --link: #A84A28;
+  --link-hover: #7E3519;
+
+  --ok: #4D6B2E;
+  --ok-soft: #E8ECDD;
+  --ok-bar: #6F8A4A;
+  --bad: #B5452B;
+  --warn: #D9A24A;
+  --warn-soft: #FBF1DC;
+  --warn-ink: #6B4A12;
+
+  --serif: 'Literata', Georgia, 'Times New Roman', serif;
+  --sans: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, monospace;
+
+  --radius: 10px;
+  --radius-lg: 16px;
+  --radius-xl: 20px;
+  --shadow: 0 1px 2px rgba(34, 32, 28, .04), 0 8px 24px rgba(34, 32, 28, .05);
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  font: 15px/1.55 var(--sans);
+  color: var(--ink);
+  background: var(--paper);
+}
+
+a { color: var(--link); }
+a:hover { color: var(--link-hover); }
+button { font: inherit; color: inherit; cursor: pointer; }
+button:disabled { opacity: .5; cursor: default; }
+[hidden] { display: none !important; }
+
+.mark {
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 8px;
+  background: var(--ink);
+  color: var(--paper);
+  font: italic 18px/1 var(--serif);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 2px 8px;
+  font: 500 19px/1.2 var(--serif);
+}
+
+.avatar {
+  width: 32px;
+  height: 32px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  background: #E3D9C8;
+  color: #5A4630;
+  font-size: 13px;
+  font-weight: 600;
+}
+
+/* ---- Image attachments (shared by chat and admin pages) ---- */
+
+.attachments { flex-basis: 100%; display: flex; flex-wrap: wrap; gap: 8px; padding-bottom: 4px; }
+.thumb {
+  position: relative;
+  width: 64px;
+  height: 64px;
+  overflow: hidden;
+  border: 1px solid var(--line-2);
+  border-radius: 10px;
+  background: var(--paper-2);
+}
+.thumb img { width: 100%; height: 100%; object-fit: cover; cursor: zoom-in; }
+.thumb button {
+  position: absolute;
+  top: 3px;
+  right: 3px;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: rgba(34, 32, 28, .72);
+  color: #fff;
+  font-size: 14px;
+  line-height: 20px;
+}
+.thumb.loading { animation: thumb-pulse 1s ease-in-out infinite alternate; }
+@keyframes thumb-pulse { to { background: var(--sand); } }
+.attach {
+  width: 36px;
+  height: 40px;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 0;
+  border-radius: 10px;
+  background: none;
+  color: var(--mute);
+}
+.attach:hover:not(:disabled) { background: var(--hover); color: var(--ink); }
+form.dragging { outline: 2px dashed var(--accent); outline-offset: 3px; }
+.attach-error { margin: 6px 0 0; font-size: 12.5px; color: var(--bad); }
+
+.img-strip { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+/* Image-only messages drop the bubble background */
+.msg.user:has(> .img-strip:only-child) { padding: 0; background: none; }
+.img-strip:only-child { justify-content: flex-end; margin: 0; }
+.img-strip img {
+  display: block;
+  max-width: 220px;
+  max-height: 160px;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  cursor: zoom-in;
+}
+.lightbox {
+  position: fixed;
+  inset: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 24px;
+  background: rgba(20, 18, 15, .82);
+  cursor: zoom-out;
+}
+.lightbox img { max-width: 100%; max-height: 100%; border-radius: 6px; background: #fff; }

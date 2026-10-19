@@ -1,0 +1,16 @@
+# Keep keys, real documents, databases and build output out of the build context
+.env
+data/
+**/bin/
+**/obj/
+.idea/
+.vs/
+.git/
+.DS_Store
+.env.*
+!.env.example
+*.db
+.claude/
+.vscode/
+CLAUDE.local.md
+deploy-*.sh
